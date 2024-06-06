@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import pandas as pd
 
 app = Flask(__name__)
@@ -26,6 +26,16 @@ def books_list():
 def book_details(book_id):
     book = books[book_id]
     return render_template('book_details.html', book=book)
+
+@app.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('query')
+    if query:
+        # Perform the search based on the query
+        search_results = [book for book in books if query.lower() in book['Title'].lower()]
+        return render_template('search_results.html', results=search_results, query=query)
+    else:
+        return render_template('search_results.html', results=[], query='')
 
 if __name__ == '__main__':
     app.run(debug=True)

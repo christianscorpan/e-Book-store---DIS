@@ -14,16 +14,35 @@
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
         }
-        .center-button {
+        .center-content {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100%;
         }
+        .search-field {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 18px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
         .btn {
             padding: 20px 40px;
             font-size: 25px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+        .btn_small {
+            padding: 10px 20px;
+            font-size: 17px;
             color: white;
             background-color: #007bff;
             border: none;
@@ -38,10 +57,13 @@
     </style>
 </head>
 <body>
-    <div class="center-button">
+    <div class="center-content">
         <h1>Welcome to the E-Book Store!</h1>
+        <form action="/search" method="GET">
+            <input type="text" name="query" class="search-field" placeholder="Search for books...">
+            <button type="submit" class="btn_small">Search</button>
+        </form>
         <a href="/books" class="btn">Books</a>
     </div>
 </body>
 </html>
-
