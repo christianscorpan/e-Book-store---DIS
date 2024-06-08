@@ -23,7 +23,7 @@ def create_table():
             category TEXT,
             publisher TEXT,
             price REAL,
-            publish_month INTEGER,
+            publish_month TEXT,
             publish_year INTEGER
         )
     """)
@@ -37,21 +37,15 @@ def import_csv_data():
     conn = get_db_connection()
     cur = conn.cursor()
 
-    month_mapping = {
-        'January': 1, 'February': 2, 'March': 3, 'April': 4, 'May': 5, 'June': 6,
-        'July': 7, 'August': 8, 'September': 9, 'October': 10, 'November': 11, 'December': 12
-    }
-
     try:
         with open('BooksDatasetClean.csv', 'r') as file:
             csv_reader = csv.reader(file)
             next(csv_reader)  # Skip the header row
             for row in csv_reader:
                 title, authors, description, category, publisher, price, publish_month, publish_year = row
-                publish_month_numeric = month_mapping.get(publish_month, 0)  # Convert month name to numeric value
                 cur.execute(
                     "INSERT INTO books (title, authors, description, category, publisher, price, publish_month, publish_year) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                    (title, authors, description, category, publisher, float(price.replace('$', '')), publish_month_numeric, int(publish_year))
+                    (title, authors, description, category, publisher, float(price), publish_month, int(publish_year))
                 )
 
         conn.commit()
