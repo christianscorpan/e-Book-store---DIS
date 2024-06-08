@@ -1,13 +1,11 @@
 import csv
-import sys
-import os
 import sqlite3
 
 def get_db_connection():
     conn = sqlite3.connect('books.db')
     return conn
 
-def create_table():
+def create_table_books():
     conn = get_db_connection()
     cur = conn.cursor()
 
@@ -30,6 +28,47 @@ def create_table():
     cur.close()
     conn.close()
     print("Table 'books' created successfully!")
+
+
+def create_table_users():
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Create the users table if it doesn't exist
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            username TEXT PRIMARY KEY,
+            password TEXT
+        )
+    """)
+
+    conn.commit()
+    cur.close()
+    conn.close()
+    print("Table 'users' created successfully!")
+
+def create_table_orders():
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Create the orders table if it doesn't exist
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS orders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT,
+            book_ids TEXT,
+            quantities TEXT,
+            total_price REAL,
+            order_date TEXT,
+            FOREIGN KEY (username) REFERENCES users(username)
+        )
+    """)
+
+    conn.commit()
+    cur.close()
+    conn.close()
+    print("Table 'orders' created successfully!")
+
 
 def import_csv_data():
     conn = get_db_connection()
@@ -56,5 +95,6 @@ def import_csv_data():
         conn.close()
 
 if __name__ == '__main__':
-    create_table()
+    create_table_books()
+    create_table_users()
     import_csv_data()
