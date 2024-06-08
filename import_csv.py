@@ -1,13 +1,9 @@
 import csv
-import sys
-import os
 import sqlite3
-
 
 def get_db_connection():
     conn = sqlite3.connect('books.db')
     return conn
-
 
 def create_table():
     conn = get_db_connection()
@@ -38,7 +34,7 @@ def import_csv_data():
     cur = conn.cursor()
 
     try:
-        with open('BooksDatasetClean.csv', 'r') as file:
+        with open('BooksDatasetClean.csv', 'r', encoding='utf-8') as file:
             csv_reader = csv.reader(file)
             next(csv_reader)  # Skip the header row
             for row in csv_reader:

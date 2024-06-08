@@ -1,3 +1,4 @@
+<!-- books.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,8 +37,8 @@
 <body>
     <h1>Book Titles</h1>
     <ul>
-        {% for book in books %}
-        <li><a href="{{ url_for('book_details', title=book['Title']) }}">{{ book['Title'] }} by {{ book['Authors'] }}</a></li>
+        {% for book_id, title in titles %}
+        <li><a href="{{ url_for('book_details', book_id=book_id) }}">{{ title }}</a></li>
         {% endfor %}
     </ul>
 </body>
