@@ -43,7 +43,7 @@ def search():
 def search_by_price():
     price = request.args.get('price', '1')
     
-    # Define regex patterns
+
     less_than_5 = re.compile(r'^\s*\$?([0-4](\.\d{1,2})?|5(\.0{1,2})?)\s*$')
     between_5_and_10 = re.compile(r'^\s*\$?(5(\.\d{1,2})?|[6-9](\.\d{1,2})?|10(\.0{1,2})?)\s*$')
     more_than_10 = re.compile(r'^\s*\$?(1[1-9](\.\d{1,2})?|[2-9]\d(\.\d{1,2})?|[1-9]\d{2,}(\.\d{1,2})?)\s*$')
