@@ -4,4 +4,4 @@ include
 lib
 lib64
 venv
-pyenv.cfg
+pyvenv.cfg
