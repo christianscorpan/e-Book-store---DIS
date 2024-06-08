@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Book Store</title>
+    <title>E-Book Store Login</title>
     <style>
         body, html {
             height: 100%;
@@ -14,30 +14,50 @@
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
         }
-        .center-button {
+        .center-form {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             height: 100%;
+            justify-content: center;
+        }
+        .form-input {
+            margin: 10px 0;
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
         .btn {
-            padding: 30px 60px;
-            font-size: 30px;
+            padding: 10px 20px;
+            font-size: 18px;
             color: white;
             background-color: #007bff;
             border: none;
-            border-radius: 10px;
+            border-radius: 5px;
             cursor: pointer;
             text-decoration: none;
+            margin-top: 20px;
         }
         .btn:hover {
             background-color: #0056b3;
         }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
-    <div class="center-button">
-        <a href="/store" class="btn">E-Book Store</a>
+    <div class="center-form">
+        <form method="POST" action="/login">
+            <input type="text" name="username" placeholder="Username" class="form-input" required>
+            <input type="password" name="password" placeholder="Password" class="form-input" required>
+            <input type="submit" value="Login" class="btn">
+        </form>
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
     </div>
 </body>
 </html>
