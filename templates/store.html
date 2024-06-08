@@ -57,10 +57,6 @@
         .search-bar input[type="submit"]:hover, .slider-container input[type="submit"]:hover {
             background-color: #0056b3;
         }
-        .slider-value {
-            font-size: 18px;
-            margin-top: 10px;
-        }
         .hidden {
             display: none;
         }
@@ -72,47 +68,16 @@
         <div class="search-bar">
             <form method="GET" action="/search">
                 <input type="text" name="query" placeholder="Search for books...">
+                
+                <label for="min-price">Min Price:</label>
+                <input type="number" id="min-price" name="min_price" min="0" step="0.01" value="0">
+                
+                <label for="max-price">Max Price:</label>
+                <input type="number" id="max-price" name="max_price" min="0" step="0.01" value="0">
+                
                 <input type="submit" value="Search">
             </form>
         </div>
-        <button class="btn" onclick="toggleSlider()">Price Filter</button>
-
-        <!-- Slider for price range, initially hidden -->
-        <div class="slider-container hidden" id="sliderContainer">
-            <label for="priceRange">Price Range: <span id="sliderValue">Less than $5</span></label>
-            <input type="range" id="priceRange" name="priceRange" min="1" max="3" value="1" oninput="updateSliderValue(this.value)">
-            <form method="GET" action="/search_by_price">
-                <input type="hidden" id="priceInput" name="price" value="1">
-                <input type="submit" value="Search by Price">
-            </form>
-        </div>
     </div>
-    <script>
-        function toggleSlider() {
-            const sliderContainer = document.getElementById('sliderContainer');
-            if (sliderContainer.classList.contains('hidden')) {
-                sliderContainer.classList.remove('hidden');
-            } else {
-                sliderContainer.classList.add('hidden');
-            }
-        }
-
-        function updateSliderValue(value) {
-            let displayValue;
-            switch(value) {
-                case '1':
-                    displayValue = 'Less than $5';
-                    break;
-                case '2':
-                    displayValue = '$5 to $10';
-                    break;
-                case '3':
-                    displayValue = 'More than $10';
-                    break;
-            }
-            document.getElementById('sliderValue').textContent = displayValue;
-            document.getElementById('priceInput').value = value;
-        }
-    </script>
 </body>
 </html>
