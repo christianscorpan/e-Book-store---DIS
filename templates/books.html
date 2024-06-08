@@ -36,6 +36,19 @@
 </head>
 <body>
     <h1>Book Titles</h1>
+    <p>Selected Category: {{ selected_category }}</p>
+    <form method="GET" action="/search">
+        <input type="text" name="query" placeholder="Search for books..." value="{{ query }}">
+        <input type="number" name="min_price" min="0" step="0.01" value="{{ min_price }}">
+        <input type="number" name="max_price" min="0" step="0.01" value="{{ max_price }}">
+        <select name="category">
+            <option value="">All Genres</option>
+            {% for category in categories %}
+                <option value="{{ category }}" {% if category == selected_category %}selected{% endif %}>{{ category }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Search">
+    </form>
     <ul>
         {% for book_id, title in titles %}
         <li><a href="{{ url_for('book_details', book_id=book_id) }}">{{ title }}</a></li>

@@ -115,29 +115,27 @@
             <form method="GET" action="/search">
                 <input type="text" name="query" placeholder="Search for books...">
                 <input type="submit" value="Search">
+                <div class="filter-options">
+                    <div class="price-range">
+                        <label for="min-price">Min Price:</label>
+                        <input type="number" id="min-price" name="min_price" min="0" step="0.01" value="{{ request.args.get('min_price', '0') }}">
+                        
+                        <label for="max-price">Max Price:</label>
+                        <input type="number" id="max-price" name="max_price" min="0" step="0.01" value="{{ request.args.get('max_price', '999999999') }}">
+                    </div>
+                    
+                    <div class="genre-dropdown">
+                        <label for="category">Genre:</label>
+                        <select name="category" id="category">
+                            <option value="">All Genres</option>
+                            {% for category in categories %}
+                                <option value="{{ category }}" {% if category == request.args.get('category', '') %}selected{% endif %}>{{ category }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
             </form>
         </div>
-        <div class="filter-options">
-            <div class="price-range">
-                <label for="min-price">Min Price:</label>
-                <input type="number" id="min-price" name="min_price" min="0" step="0.01" value="0">
-                
-                <label for="max-price">Max Price:</label>
-                <input type="number" id="max-price" name="max_price" min="0" step="0.01" value="100">
-            </div>
-            
-
-            <div class="genre-dropdown">
-                <label for="category">Genre:</label>
-                <select name="category" id="category">
-                    <option value="">All Genres</option>
-                    {% for category in categories %}
-                        <option value="{{ category }}">{{ category }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
-    </div>
     </div>
 </body>
 </html>
