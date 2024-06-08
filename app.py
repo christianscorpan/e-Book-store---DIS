@@ -44,11 +44,16 @@ def search():
         max_price = '999999999'  # A large value to include all prices if max_price is not provided
 
     conn = get_db_connection()
-    books = conn.execute('SELECT id, title, price FROM books WHERE title LIKE ? AND price BETWEEN ? AND ?',
-                         (f'%{query}%', min_price, max_price)).fetchall()
+    books = conn.execute('SELECT id, title, price FROM books').fetchall()
     conn.close()
 
-    return render_template('books.html', titles=[(book['id'], book['title']) for book in books])
+    # Filter books based on search query using regex
+    filtered_books = [book for book in books if re.search(query, book['title'], re.IGNORECASE)]
+
+    # Filter books based on price range
+    filtered_books = [book for book in filtered_books if float(min_price) <= book['price'] <= float(max_price)]
+
+    return render_template('books.html', titles=[(book['id'], book['title']) for book in filtered_books])
 
 if __name__ == '__main__':
     app.run(debug=True)
