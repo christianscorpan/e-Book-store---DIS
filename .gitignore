@@ -1,8 +1,8 @@
 __pycache__/
 bin/
 include/
-lib/
 lib64/
+lib/
 venv/
 pyvenv.cfg
 books.db
