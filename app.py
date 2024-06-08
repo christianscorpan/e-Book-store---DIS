@@ -1,13 +1,12 @@
 from flask import Flask, render_template, request
-import pandas as pd
+import sqlite3
 
 app = Flask(__name__)
 
-# Read the CSV file
-df = pd.read_csv('BooksDatasetClean.csv')
-
-# Convert the DataFrame to a list of dictionaries
-books = df.to_dict(orient='records')
+def get_db_connection():
+    conn = sqlite3.connect('books.db')
+    conn.row_factory = sqlite3.Row
+    return conn
 
 @app.route('/')
 def index():
@@ -19,19 +18,25 @@ def store():
 
 @app.route('/books')
 def books_list():
-    titles = [(index, book['Title']) for index, book in enumerate(books)]
-    return render_template('books.html', titles=titles)
+    conn = get_db_connection()
+    books = conn.execute('SELECT id, title FROM books').fetchall()
+    conn.close()
+    return render_template('books.html', titles=books)
 
 @app.route('/book/<int:book_id>')
 def book_details(book_id):
-    book = books[book_id]
+    conn = get_db_connection()
+    book = conn.execute('SELECT * FROM books WHERE id = ?', (book_id,)).fetchone()
+    conn.close()
     return render_template('book_details.html', book=book)
 
 @app.route('/search')
 def search():
     query = request.args.get('query', '')
-    results = [(index, book['Title']) for index, book in enumerate(books) if query.lower() in book['Title'].lower()]
-    return render_template('books.html', titles=results)
+    conn = get_db_connection()
+    books = conn.execute('SELECT id, title FROM books WHERE title LIKE ?', (f'%{query}%',)).fetchall()
+    conn.close()
+    return render_template('books.html', titles=books)
 
 if __name__ == '__main__':
     app.run(debug=True)
