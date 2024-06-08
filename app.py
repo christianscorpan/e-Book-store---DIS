@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 import sqlite3
+import re
 
 app = Flask(__name__)
 
@@ -37,6 +38,28 @@ def search():
     books = conn.execute('SELECT id, title FROM books WHERE title LIKE ?', (f'%{query}%',)).fetchall()
     conn.close()
     return render_template('books.html', titles=books)
+
+@app.route('/search_by_price')
+def search_by_price():
+    price = request.args.get('price', '1')
+    
+
+    less_than_5 = re.compile(r'^\s*\$?([0-4](\.\d{1,2})?|5(\.0{1,2})?)\s*$')
+    between_5_and_10 = re.compile(r'^\s*\$?(5(\.\d{1,2})?|[6-9](\.\d{1,2})?|10(\.0{1,2})?)\s*$')
+    more_than_10 = re.compile(r'^\s*\$?(1[1-9](\.\d{1,2})?|[2-9]\d(\.\d{1,2})?|[1-9]\d{2,}(\.\d{1,2})?)\s*$')
+
+    conn = get_db_connection()
+    books = conn.execute('SELECT id, title, price FROM books').fetchall()
+    conn.close()
+    
+    if price == '1':
+        filtered_books = [book for book in books if less_than_5.match(str(book['price']))]
+    elif price == '2':
+        filtered_books = [book for book in books if between_5_and_10.match(str(book['price']))]
+    elif price == '3':
+        filtered_books = [book for book in books if more_than_10.match(str(book['price']))]
+    
+    return render_template('books.html', titles=[(book['id'], book['title']) for book in filtered_books])
 
 if __name__ == '__main__':
     app.run(debug=True)
