@@ -9,21 +9,27 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
-@app.route('/')
-def index():
+def get_unique_categories():
     conn = get_db_connection()
-    categories = conn.execute('SELECT DISTINCT category FROM books').fetchall()
+    categories = conn.execute('SELECT category FROM books').fetchall()
     conn.close()
 
-    return render_template('index.html', categories=[category['category'] for category in categories])
+    unique_categories = set()
+    for category in categories:
+        category_list = category['category'].split(', ')
+        unique_categories.update(category_list)
+
+    return sorted(unique_categories)
+
+@app.route('/')
+def index():
+    categories = get_unique_categories()
+    return render_template('index.html', categories=categories)
 
 @app.route('/store')
 def store():
-    conn = get_db_connection()
-    categories = conn.execute('SELECT DISTINCT category FROM books').fetchall()
-    conn.close()
-
-    return render_template('store.html', categories=[category['category'] for category in categories])
+    categories = get_unique_categories()
+    return render_template('store.html', categories=categories)
 
 @app.route('/books')
 def books_list():
@@ -39,7 +45,6 @@ def book_details(book_id):
     conn.close()
     return render_template('book_details.html', book=book)
 
-
 @app.route('/search')
 def search():
     query = request.args.get('query', '')
@@ -49,7 +54,7 @@ def search():
 
     conn = get_db_connection()
     books = conn.execute('SELECT id, title, price, category FROM books').fetchall()
-    categories = conn.execute('SELECT DISTINCT category FROM books').fetchall()
+    categories = get_unique_categories()
     conn.close()
 
     # Filter books based on search query using regex
@@ -60,11 +65,11 @@ def search():
 
     # Filter books based on selected category
     if selected_category:
-        filtered_books = [book for book in filtered_books if book['category'] == selected_category]
+        filtered_books = [book for book in filtered_books if selected_category in book['category'].split(', ')]
     else:
         selected_category = 'All Genres'
 
-    return render_template('books.html', titles=[(book['id'], book['title']) for book in filtered_books], categories=[category['category'] for category in categories], selected_category=selected_category, min_price=min_price, max_price=max_price, query=query)
+    return render_template('books.html', titles=[(book['id'], book['title']) for book in filtered_books], categories=categories, selected_category=selected_category, min_price=min_price, max_price=max_price, query=query)
 
 if __name__ == '__main__':
     app.run(debug=True)
