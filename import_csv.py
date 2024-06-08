@@ -96,4 +96,5 @@ def import_csv_data():
 if __name__ == '__main__':
     create_table_books()
     create_table_users()
+    create_table_orders()
     import_csv_data()

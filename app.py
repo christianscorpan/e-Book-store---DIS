@@ -11,11 +11,19 @@ def get_db_connection():
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    conn = get_db_connection()
+    categories = conn.execute('SELECT DISTINCT category FROM books').fetchall()
+    conn.close()
+
+    return render_template('index.html', categories=[category['category'] for category in categories])
 
 @app.route('/store')
 def store():
-    return render_template('store.html')
+    conn = get_db_connection()
+    categories = conn.execute('SELECT DISTINCT category FROM books').fetchall()
+    conn.close()
+
+    return render_template('store.html', categories=[category['category'] for category in categories])
 
 @app.route('/books')
 def books_list():
@@ -31,35 +39,32 @@ def book_details(book_id):
     conn.close()
     return render_template('book_details.html', book=book)
 
+
 @app.route('/search')
 def search():
     query = request.args.get('query', '')
-    conn = get_db_connection()
-    books = conn.execute('SELECT id, title FROM books WHERE title LIKE ?', (f'%{query}%',)).fetchall()
-    conn.close()
-    return render_template('books.html', titles=books)
-
-@app.route('/search_by_price')
-def search_by_price():
-    price = request.args.get('price', '1')
-    
-
-    less_than_5 = re.compile(r'^\s*\$?([0-4](\.\d{1,2})?|5(\.0{1,2})?)\s*$')
-    between_5_and_10 = re.compile(r'^\s*\$?(5(\.\d{1,2})?|[6-9](\.\d{1,2})?|10(\.0{1,2})?)\s*$')
-    more_than_10 = re.compile(r'^\s*\$?(1[1-9](\.\d{1,2})?|[2-9]\d(\.\d{1,2})?|[1-9]\d{2,}(\.\d{1,2})?)\s*$')
+    min_price = request.args.get('min_price', '0')
+    max_price = request.args.get('max_price', '999999999')
+    selected_category = request.args.get('category', '')
 
     conn = get_db_connection()
-    books = conn.execute('SELECT id, title, price FROM books').fetchall()
+    books = conn.execute('SELECT id, title, price, category FROM books').fetchall()
+    categories = conn.execute('SELECT DISTINCT category FROM books').fetchall()
     conn.close()
-    
-    if price == '1':
-        filtered_books = [book for book in books if less_than_5.match(str(book['price']))]
-    elif price == '2':
-        filtered_books = [book for book in books if between_5_and_10.match(str(book['price']))]
-    elif price == '3':
-        filtered_books = [book for book in books if more_than_10.match(str(book['price']))]
-    
-    return render_template('books.html', titles=[(book['id'], book['title']) for book in filtered_books])
+
+    # Filter books based on search query using regex
+    filtered_books = [book for book in books if re.search(query, book['title'], re.IGNORECASE)]
+
+    # Filter books based on price range
+    filtered_books = [book for book in filtered_books if float(min_price) <= book['price'] <= float(max_price)]
+
+    # Filter books based on selected category
+    if selected_category:
+        filtered_books = [book for book in filtered_books if book['category'] == selected_category]
+    else:
+        selected_category = 'All Genres'
+
+    return render_template('books.html', titles=[(book['id'], book['title']) for book in filtered_books], categories=[category['category'] for category in categories], selected_category=selected_category, min_price=min_price, max_price=max_price, query=query)
 
 if __name__ == '__main__':
     app.run(debug=True)
