@@ -37,8 +37,8 @@
 <body>
     <h1>Book Titles</h1>
     <ul>
-        {% for book_id, title in titles %}
-        <li><a href="{{ url_for('book_details', book_id=book_id) }}">{{ title }}</a></li>
+        {% for title in titles %}
+        <li><a href="{{ url_for('book_details', book_id=title[0]) }}">{{ title[1] }}</a></li>
         {% endfor %}
     </ul>
 </body>
