@@ -57,7 +57,6 @@ def create_table_orders():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT,
             book_ids TEXT,
-            quantities TEXT,
             total_price REAL,
             order_date TEXT,
             FOREIGN KEY (username) REFERENCES users(username)
