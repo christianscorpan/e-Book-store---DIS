@@ -107,7 +107,34 @@
             padding-left: 20px;
         }
 
-
+        .dropdown {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        .dropdown-content a:hover {
+            background-color: #f1f1f1
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .dropdown:hover .dropbtn {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -123,7 +150,7 @@
                         <input type="number" id="min-price" name="min_price" min="0" step="0.01" value="{{ request.args.get('min_price', '0') }}">
                         
                         <label for="max-price">Max Price:</label>
-                        <input type="number" id="max-price" name="max_price" min="0" step="0.01" value="{{ request.args.get('max_price', '999999999') }}">
+                        <input type="number" id="max-price" name="max_price" min="0" step="0.01" value="{{ request.args.get('max_price', '1000') }}">
                     </div>
                     
                     <div class="genre-dropdown">
@@ -143,6 +170,13 @@
 <a href="{{ url_for('view_cart') }}" style="position: absolute; top: 10px; right: 10px;">
     <img src="/static/cart_icon.png" alt="Cart" style="width: 30px;">
 </a>
+</div>
+<div class="dropdown">
+    <button class="dropbtn">{{ session['username'] }}</button>
+    <div class="dropdown-content">
+        <a href="{{ url_for('change_password') }}">Change Password</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
 </div>
 </body>
 </html>

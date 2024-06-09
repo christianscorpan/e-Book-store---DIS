@@ -100,9 +100,18 @@ def import_csv_data():
         cur.close()
         conn.close()
 
+# Add a specific username and password to the database for demonstration
+def add_default_user():
+    conn = get_db_connection()
+    conn.execute('DELETE FROM USERS')  # Clear existing users for this example
+    conn.execute('INSERT INTO USERS (username, password) VALUES (?, ?)', ('test', '123'))
+    conn.commit()
+    conn.close()
+
 if __name__ == '__main__':
     create_table_books()
     create_table_users()
     create_table_orders()
     create_table_order_items()
     import_csv_data()
+    add_default_user()
