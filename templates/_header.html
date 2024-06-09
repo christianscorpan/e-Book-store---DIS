@@ -1,6 +1,7 @@
 <div class="dropdown">
     <button class="dropbtn">{{ session['username'] }}</button>
     <div class="dropdown-content">
+        <a href="{{ url_for('orders') }}">Orders</a>
         <a href="{{ url_for('change_password') }}">Change Password</a>
         <a href="{{ url_for('logout') }}">Logout</a>
     </div>

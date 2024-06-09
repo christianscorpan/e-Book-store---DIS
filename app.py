@@ -30,9 +30,6 @@ def init_db():
             username TEXT NOT NULL
         )
     ''')
-    # Drop the existing order_items table if it exists
-    conn.execute('DROP TABLE IF EXISTS order_items')
-    # Create the order_items table with the correct schema
     conn.execute('''
         CREATE TABLE IF NOT EXISTS order_items (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -214,7 +211,7 @@ def place_order():
 @app.route('/orders')
 @login_required
 def orders():
-    username = session.get('username', 'test_user') # Replace with actual logic to get the username
+    username = session.get('username')  # Use the actual logged-in user's username
     conn = get_db_connection()
     c = conn.cursor()
     c.execute('SELECT * FROM orders WHERE username = ?', (username,))
