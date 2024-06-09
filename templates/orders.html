@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Orders</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .order {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .order h2 {
+            margin-top: 0;
+        }
+        .book-list {
+            margin-top: 10px;
+        }
+        .book-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .book-list li {
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin-bottom: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .delete-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Your Orders</h1>
+    {% for order in orders %}
+    <div class="order">
+        <h2>Order {{ loop.index }}</h2>
+        <p><strong>Username:</strong> {{ order['username'] }}</p>
+        <p><strong>Date:</strong> {{ order['order_date'] }}</p>
+        <p><strong>Total Price:</strong> ${{ order['total_price'] }}</p>
+        <div class="book-list">
+            <strong>Books:</strong>
+            <ul>
+                {% for book in order['books'] %}
+                <li>{{ book['title'] }} - ${{ book['price'] }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endfor %}
+    <form action="{{ url_for('delete_all_orders') }}" method="POST">
+        <button type="submit" class="delete-button">Clear Order History</button>
+    </form>
+
+    <!-- Back Arrow -->
+    <a href="javascript:void(0);" onclick="window.history.back();" style="position: absolute; top: 10px; left: 10px; font-size: 20px; text-decoration: none;">&larr;</a>
+</body>
+</html>
