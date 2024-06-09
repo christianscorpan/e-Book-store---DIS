@@ -39,6 +39,7 @@ def create_table_users():
         CREATE TABLE IF NOT EXISTS users (
             username TEXT PRIMARY KEY,
             password TEXT
+            order_ids TEXT
         )
     """)
 
