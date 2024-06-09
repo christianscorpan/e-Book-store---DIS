@@ -1,10 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, get_flashed_messages, render_template, request, redirect, url_for, session, flash
+from functools import wraps
 import sqlite3
 import re
-from functools import wraps
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key' # Needed for session management
+app.secret_key = 'your_secret_key'  # Needed for session management
 
 def get_db_connection():
     conn = sqlite3.connect('books.db')
@@ -23,8 +23,6 @@ def init_db():
     ''')
     conn.commit()
     conn.close()
-
-
 
 def get_unique_categories():
     conn = get_db_connection()
@@ -45,18 +43,59 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+# Decorator to redirect logged-in users
+def redirect_if_logged_in(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' in session:
+            return redirect(url_for('store'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 @app.route('/')
+@redirect_if_logged_in
 def index():
     categories = get_unique_categories()
     return render_template('index.html', categories=categories)
+
+@app.route('/register', methods=['GET', 'POST'])
+@redirect_if_logged_in
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+        
+        if password != confirm_password:
+            flash('Passwords do not match.', 'error')
+            return redirect(url_for('register'))
+        
+        conn = get_db_connection()
+        user_exists = conn.execute('SELECT * FROM USERS WHERE username = ?', (username,)).fetchone()
+        
+        if user_exists:
+            flash('Username already exists.', 'error')
+            conn.close()
+            return redirect(url_for('register'))
+        
+        conn.execute('INSERT INTO USERS (username, password) VALUES (?, ?)', (username, password))
+        conn.commit()
+        conn.close()
+
+        flash('Registration successful! You can now log in.', 'success')
+        return redirect(url_for('index'))
+    
+    return render_template('register.html')
 
 @app.route('/login', methods=['POST'])
 def login():
     username = request.form['username']
     password = request.form['password']
+    
     conn = get_db_connection()
     user = conn.execute('SELECT * FROM USERS WHERE username = ? AND password = ?', (username, password)).fetchone()
     conn.close()
+    
     if user:
         session['username'] = username
         return redirect(url_for('store'))
@@ -74,7 +113,6 @@ def store():
 def logout():
     session.pop('username', None)
     return redirect(url_for('index'))
-
 
 @app.route('/books')
 @login_required
@@ -99,12 +137,12 @@ def search():
     min_price = request.args.get('min_price', '0')
     max_price = request.args.get('max_price', '999999999')
     selected_category = request.args.get('category', '')
-    
+
     conn = get_db_connection()
     books = conn.execute('SELECT id, title, price, category FROM books').fetchall()
     categories = get_unique_categories()
     conn.close()
-    
+
     # Filter books based on search query using regex
     filtered_books = [book for book in books if re.search(query, book['title'], re.IGNORECASE)]
     # Filter books based on price range
@@ -131,7 +169,7 @@ def view_cart():
     cart = session.get('cart', [])
     if len(cart) == 0:
         return render_template('cart.html', cart_books=[], total_price=0)
-        
+    
     conn = get_db_connection()
     cart_books = conn.execute('SELECT * FROM books WHERE id IN ({})'.format(','.join('?' * len(cart))), cart).fetchall()
     total_price = sum(book['price'] for book in cart_books)
@@ -153,35 +191,6 @@ def clear_cart():
     session.pop('cart', None)
     return redirect(url_for('view_cart'))
 
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        confirm_password = request.form['confirm_password']
-
-        if password != confirm_password:
-            flash('Passwords do not match.', 'error')
-            return redirect(url_for('register'))
-        
-        conn = get_db_connection()
-        user_exists = conn.execute('SELECT * FROM USERS WHERE username = ?', (username,)).fetchone()
-        
-        if user_exists:
-            flash('Username already exists.', 'error')
-            conn.close()
-            return redirect(url_for('register'))
-        
-        conn.execute('INSERT INTO USERS (username, password) VALUES (?, ?)', (username, password))
-        conn.commit()
-        conn.close()
-
-        flash('Registration successful! You can now log in.', 'success')
-        return redirect(url_for('index'))
-    
-    return render_template('register.html')
-
 @app.route('/change_password', methods=['GET', 'POST'])
 @login_required
 def change_password():
@@ -202,7 +211,8 @@ def change_password():
         
         return redirect(url_for('change_password'))
 
-    return render_template('change_password.html')
+    flashed_messages = get_flashed_messages(with_categories=True)
+    return render_template('change_password.html', flashed_messages=flashed_messages)
 
 if __name__ == '__main__':
     init_db()
