@@ -75,27 +75,6 @@ def logout():
     session.pop('username', None)
     return redirect(url_for('index'))
 
-@app.route('/change_password', methods=['GET', 'POST'])
-@login_required
-def change_password():
-    if request.method == 'POST':
-        old_password = request.form['old_password']
-        new_password = request.form['new_password']
-
-        conn = get_db_connection()
-        user = conn.execute('SELECT * FROM USERS WHERE username = ? AND password = ?', (session['username'], old_password)).fetchone()
-        
-        if user:
-            conn.execute('UPDATE USERS SET password = ? WHERE username = ?', (new_password, session['username']))
-            conn.commit()
-            conn.close()
-            flash('Password changed successfully.')
-        else:
-            flash('Old password is incorrect.')
-        
-        return redirect(url_for('change_password'))
-
-    return render_template('change_password.html')
 
 @app.route('/books')
 @login_required
@@ -173,6 +152,57 @@ def remove_from_cart(book_id):
 def clear_cart():
     session.pop('cart', None)
     return redirect(url_for('view_cart'))
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+
+        if password != confirm_password:
+            flash('Passwords do not match.', 'error')
+            return redirect(url_for('register'))
+        
+        conn = get_db_connection()
+        user_exists = conn.execute('SELECT * FROM USERS WHERE username = ?', (username,)).fetchone()
+        
+        if user_exists:
+            flash('Username already exists.', 'error')
+            conn.close()
+            return redirect(url_for('register'))
+        
+        conn.execute('INSERT INTO USERS (username, password) VALUES (?, ?)', (username, password))
+        conn.commit()
+        conn.close()
+
+        flash('Registration successful! You can now log in.', 'success')
+        return redirect(url_for('index'))
+    
+    return render_template('register.html')
+
+@app.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    if request.method == 'POST':
+        old_password = request.form['old_password']
+        new_password = request.form['new_password']
+
+        conn = get_db_connection()
+        user = conn.execute('SELECT * FROM USERS WHERE username = ? AND password = ?', (session['username'], old_password)).fetchone()
+        
+        if user:
+            conn.execute('UPDATE USERS SET password = ? WHERE username = ?', (new_password, session['username']))
+            conn.commit()
+            conn.close()
+            flash('Password changed successfully.', 'success')
+        else:
+            flash('Old password is incorrect.', 'error')
+        
+        return redirect(url_for('change_password'))
+
+    return render_template('change_password.html')
 
 if __name__ == '__main__':
     init_db()
