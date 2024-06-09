@@ -1,89 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>E-Book Store Login</title>
-<style>
-body, html {
-height: 100%;
-margin: 0;
-display: flex;
-justify-content: center;
-align-items: center;
-font-family: Arial, sans-serif;
-background-color: #f4f4f4;
-}
-.center-form {
-display: flex;
-flex-direction: column;
-align-items: center;
-height: 100%;
-justify-content: center;
-}
-.form-input {
-margin: 10px 0;
-padding: 10px;
-width: 300px;
-border: 1px solid #ddd;
-border-radius: 5px;
-}
-.btn {
-padding: 10px 20px;
-font-size: 18px;
-color: white;
-background-color: #007bff;
-border: none;
-border-radius: 5px;
-cursor: pointer;
-text-decoration: none;
-margin-top: 20px;
-}
-.btn:hover {
-background-color: #0056b3;
-}
-.error {
-color: red;
-margin-top: 10px;
-}
-.success {
-color: green;
-margin-top: 10px;
-}
-.register-link {
-margin-top: 10px;
-text-decoration: none;
-color: #007bff;
-}
-.register-link:hover {
-color: #0056b3;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Book Store Login</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .center-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            justify-content: center;
+        }
+        .form-input {
+            margin: 10px 0;
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .btn {
+            padding: 10px 20px;
+            font-size: 18px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+        .success {
+            color: green;
+            margin-top: 10px;
+        }
+        .register-link {
+            margin-top: 10px;
+            text-decoration: none;
+            color: #007bff;
+        }
+        .register-link:hover {
+            color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-<div class="center-form">
-<form method="POST" action="/login">
-<input type="text" name="username" placeholder="Username" class="form-input" required>
-<input type="password" name="password" placeholder="Password" class="form-input" required>
-<input type="submit" value="Login" class="btn">
-</form>
-{% if error %}
-<div class="error">{{ error }}</div>
-{% endif %}
-{% with messages = get_flashed_messages(with_categories=True) %}
-  {% if messages %}
-    <ul>
-    {% for category, message in messages %}
-      {% if category == 'success' %}
-        <li class="success">{{ message }}</li>
-      {% else %}
-        <li class="error">{{ message }}</li>
-      {% endif %}
-    {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
-<a href="{{ url_for('register') }}" class="register-link">Register</a>
-</div>
+    <div class="center-form">
+        <h1>E-Book Store</h1>
+        <form method="POST" action="/login">
+            <input type="text" name="username" placeholder="Username" class="form-input" required>
+            <input type="password" name="password" placeholder="Password" class="form-input" required>
+            <input type="submit" value="Login" class="btn">
+        </form>
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+            <ul>
+                {% for category, message in messages %}
+                {% if category == 'success' %}
+                    <li class="success">{{ message }}</li>
+                {% else %}
+                    <li class="error">{{ message }}</li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+            {% endif %}
+        {% endwith %}
+        <a href="{{ url_for('register') }}" class="register-link">Register</a>
+    </div>
 </body>
 </html>
