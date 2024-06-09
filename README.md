@@ -5,9 +5,10 @@ Clone / download repository files and run the following to install the required 
 
 conda install python
 conda create --name myenv --no-default-packages
+conda init your_shell_you_use (e.g: conda init bash)
 conda activate myenv
 
-pip install flask
+conda install flask
 
 Folders:
 
