@@ -10,9 +10,7 @@ body {
     background-color: #f4f4f4;
     margin: 20px;
 }
-h1 {
-    text-align: center;
-}
+h1 { text-align: center; }
 .details {
     background-color: #fff;
     padding: 20px;
@@ -22,15 +20,14 @@ h1 {
     margin: auto;
     position: relative;
 }
-.details h2 {
-    margin-top: 0;
-}
-.details p {
-    margin: 5px 0;
-}
+.details h2 { margin-top: 0; }
+.details p { margin: 5px 0; }
 </style>
 </head>
 <body>
+
+{% include '_header.html' %}
+
 <div class="details">
     <h1>{{ book['title'] }}</h1>
     <h2>By {{ book['authors'] }}</h2>
@@ -45,8 +42,5 @@ h1 {
     <!-- Back Arrow -->
     <a href="javascript:void(0);" onclick="window.history.back();" style="position: absolute; top: 10px; left: 10px; font-size: 20px; text-decoration: none;">&larr;</a>
 </div>
-<a href="{{ url_for('view_cart') }}" style="position: absolute; top: 10px; right: 10px;">
-    <img src="/static/cart_icon.png" alt="Cart" style="width: 30px;">
-</a>
 </body>
 </html>

@@ -1,40 +1,47 @@
-<!-- books.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Titles</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 20px;
-        }
-        h1 {
-            text-align: center;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        li {
-            background-color: #fff;
-            margin: 5px 0;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        a {
-            text-decoration: none;
-            color: #007bff;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book Titles</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 20px;
+}
+h1 {
+    text-align: center;
+}
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+li {
+    background-color: #fff;
+    margin: 5px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+a {
+    text-decoration: none;
+    color: #007bff;
+}
+a:hover {
+    text-decoration: underline;
+}
+.dropdown {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+</style>
 </head>
 <body>
+
+    {% include '_header.html' %}
+
     <h1>Book Titles</h1>
     <p>Selected Category: {{ selected_category }}</p>
     <form method="GET" action="/search">
@@ -48,13 +55,11 @@
             {% endfor %}
         </select>
         <input type="submit" value="Search">
-        <ul>
-            {% for book_id, title in titles %}
+    </form>
+    <ul>
+        {% for book_id, title in titles %}
             <li><a href="{{ url_for('book_details', book_id=book_id) }}">{{ title }}</a></li>
-            {% endfor %}
-        </ul>
-        <a href="{{ url_for('view_cart') }}" style="position: absolute; top: 10px; right: 10px;">
-            <img src="/static/cart_icon.png" alt="Cart" style="width: 30px;">
-        </a>
+        {% endfor %}
+    </ul>
     </body>
-</html>
+    </html>
