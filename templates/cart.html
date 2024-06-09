@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <style>
+        /* Add some basic styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 20px;
+        }
+        .cart {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            max-width: 600px;
+            margin: auto;
+        }
+        .cart h1 {
+            text-align: center;
+        }
+        .cart ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .cart li {
+            background-color: #fff;
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .cart .total {
+            text-align: right;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="cart">
+        <h1>Shopping Cart</h1>
+        <ul>
+            {% for book in cart_books %}
+            <li>
+                {{ book['title'] }} - ${{ book['price'] }}
+                <form action="{{ url_for('remove_from_cart', book_id=book['id']) }}" method="POST">
+                    <button type="submit">Remove</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+        <div class="total">
+            <strong>Total: ${{ total_price }}</strong>
+        </div>
+        <form action="{{ url_for('clear_cart') }}" method="POST">
+            <button type="submit">Clear Cart</button>
+        </form>
+    </div>
+</body>
+</html>

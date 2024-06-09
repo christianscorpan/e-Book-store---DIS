@@ -35,12 +35,10 @@ def get_unique_categories():
     conn = get_db_connection()
     categories = conn.execute('SELECT category FROM books').fetchall()
     conn.close()
-
     unique_categories = set()
     for category in categories:
         category_list = category['category'].split(', ')
         unique_categories.update(category_list)
-
     return sorted(unique_categories)
 
 @app.route('/')
@@ -52,11 +50,9 @@ def index():
 def login():
     username = request.form['username']
     password = request.form['password']
-
     conn = get_db_connection()
     user = conn.execute('SELECT * FROM USERS WHERE username = ? AND password = ?', (username, password)).fetchone()
     conn.close()
-
     if user:
         session['username'] = username
         return redirect(url_for('store'))
@@ -96,25 +92,52 @@ def search():
     min_price = request.args.get('min_price', '0')
     max_price = request.args.get('max_price', '999999999')
     selected_category = request.args.get('category', '')
-
     conn = get_db_connection()
     books = conn.execute('SELECT id, title, price, category FROM books').fetchall()
     categories = get_unique_categories()
     conn.close()
-
     # Filter books based on search query using regex
     filtered_books = [book for book in books if re.search(query, book['title'], re.IGNORECASE)]
-
     # Filter books based on price range
     filtered_books = [book for book in filtered_books if float(min_price) <= book['price'] <= float(max_price)]
-
     # Filter books based on selected category
     if selected_category:
         filtered_books = [book for book in filtered_books if selected_category in book['category'].split(', ')]
     else:
         selected_category = 'All Genres'
-
     return render_template('books.html', titles=[(book['id'], book['title']) for book in filtered_books], categories=categories, selected_category=selected_category, min_price=min_price, max_price=max_price, query=query)
+
+@app.route('/add_to_cart/<int:book_id>', methods=['POST'])
+def add_to_cart(book_id):
+    cart = session.get('cart', [])
+    cart.append(book_id)
+    session['cart'] = cart
+    return redirect(url_for('book_details', book_id=book_id))
+
+@app.route('/cart')
+def view_cart():
+    cart = session.get('cart', [])
+    if len(cart) == 0:
+        return render_template('cart.html', cart_books=[], total_price=0)
+
+    conn = get_db_connection()
+    cart_books = conn.execute('SELECT * FROM books WHERE id IN ({})'.format(','.join('?' * len(cart))), cart).fetchall()
+    total_price = sum(book['price'] for book in cart_books)
+    conn.close()
+    return render_template('cart.html', cart_books=cart_books, total_price=total_price)
+
+@app.route('/remove_from_cart/<int:book_id>', methods=['POST'])
+def remove_from_cart(book_id):
+    cart = session.get('cart', [])
+    if book_id in cart:
+        cart.remove(book_id)
+        session['cart'] = cart
+    return redirect(url_for('view_cart'))
+
+@app.route('/clear_cart', methods=['POST'])
+def clear_cart():
+    session.pop('cart', None)
+    return redirect(url_for('view_cart'))
 
 if __name__ == '__main__':
     init_db()
